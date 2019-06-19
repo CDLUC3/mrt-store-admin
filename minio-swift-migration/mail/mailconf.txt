@@ -1,7 +1,0 @@
-to=dloy@ucop.edu;de_loy@yahoo.com
-from=noreply@ucop.edu
-subject=Test Email Config
-message=This is test email sent by Perl Script using config
-attach=/home/dloy/Projects/2019-05-minio-swift-migration/run/Collection-Report.txt
-attachName=Collection-Report-20190611.txt
-smtp=smtp.ucop.edu

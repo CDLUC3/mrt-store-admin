@@ -139,16 +139,16 @@ sub setInsertCollectionNode {
     my $insertsql = "insert into inv_collections_inv_nodes "
 		. "set inv_collection_id=$collid, inv_node_id= $nodeid";
 		
-	#print( "insertsql=$insertsql\n");
-	#return $cnt;
-	my $cnt = $dbh->do($insertsql);
-	if ($cnt == 0) {
-       logerr("insert failed: "
-			. " - sql=$sql "
-			. " - Error: $dbh->errstr()"
-			);
-	}
-	print "INSERT cnt=$cnt\n";
+    #print( "insertsql=$insertsql\n");
+    #return $cnt;
+    my $cnt = $dbh->do($insertsql);
+    if ($cnt == 0) {
+    logerr("insert failed: "
+                    . " - sql=$sql "
+                    . " - Error: $dbh->errstr()"
+                    );
+    }
+    print "INSERT cnt=$cnt\n";
     return $cnt;
 }
 
@@ -158,28 +158,28 @@ sub setReplicatedNull {
    my ($dbh, $collid)  = @_;
    my $cnt = 0;
    my $updatesql = 'update inv_nodes_inv_objects '
-		. 'set replicated = null '
-		. 'where id in ( '
-		. 'select tempTab.tempId '
-		. 'FROM ( '
-		. '  select inv_nodes_inv_objects.id as tempId '
-		. '	from inv_nodes_inv_objects, inv_collections_inv_nodes, inv_collections_inv_objects '
-		. '	where inv_collections_inv_objects.inv_collection_id = inv_collections_inv_nodes.inv_collection_id '
-		. '	and inv_nodes_inv_objects.inv_object_id = inv_collections_inv_objects.inv_object_id '
-		. "	and inv_nodes_inv_objects.role = 'primary' "
-		. "	and inv_collections_inv_nodes.inv_collection_id=$collid "
-		. '	) AS tempTab '
-		. ') ';
-	#print("updatesql=$sql\n");
-	#return $cnt;
-	$cnt = $dbh->do($updatesql);
-	if ($cnt == 0) {
-       logerr("insert failed: "
-			. " - sql=$sql "
-			. " - Error: $dbh->errstr()"
-			);
-	}
-	print "UPDATE cnt=$cnt\n";
+            . 'set replicated = null '
+            . 'where id in ( '
+            . 'select tempTab.tempId '
+            . 'FROM ( '
+            . '  select inv_nodes_inv_objects.id as tempId '
+            . '	from inv_nodes_inv_objects, inv_collections_inv_nodes, inv_collections_inv_objects '
+            . '	where inv_collections_inv_objects.inv_collection_id = inv_collections_inv_nodes.inv_collection_id '
+            . '	and inv_nodes_inv_objects.inv_object_id = inv_collections_inv_objects.inv_object_id '
+            . "	and inv_nodes_inv_objects.role = 'primary' "
+            . "	and inv_collections_inv_nodes.inv_collection_id=$collid "
+            . '	) AS tempTab '
+            . ') ';
+    #print("updatesql=$sql\n");
+    #return $cnt;
+    $cnt = $dbh->do($updatesql);
+    if ($cnt == 0) {
+        logerr("insert failed: "
+                    . " - sql=$sql "
+                    . " - Error: $dbh->errstr()"
+                    );
+    }
+    print "UPDATE cnt=$cnt\n";
     return $cnt;
 }
 
