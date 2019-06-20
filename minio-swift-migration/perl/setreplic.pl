@@ -18,8 +18,10 @@ if (@ARGV < 1) {
 my $dbprop = $ARGV[0];
 my ($dbh, %db) = getDB($dbprop);
 my $logfile = setLog(%db);
+my $hostname = $db{'hostname'};
 
 # Get mnemonic for new collection to migrate
+print "Update for inv db: $hostname\n";
 print "Enter migrate collection mnemonic: ";
 my $collectName = <STDIN>;
 chomp $collectName;
