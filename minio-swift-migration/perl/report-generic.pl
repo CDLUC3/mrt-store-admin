@@ -36,6 +36,12 @@ while (my $ref = $sth->fetchrow_hashref()) {
     getCollection($cid, $mnemonic);
 }
 $sth->finish;
+
+my ($totsdsc, $totmigr) = getTotals($dbh, %db);
+print "\n#####################################################\n";
+printf("%-20s %10d\n", "Migrated Objects:",$totmigr);
+printf("%-20s %10d\n", "Total Objects:",$totsdsc);
+print "#####################################################\n";
 exit;
 
 # Get qualified collection information
@@ -96,5 +102,32 @@ sub getDB {
     my $dsn = "DBI:mysql:database=$database;host=$hostname;port=$port";
     my $dbh = DBI->connect($dsn, $user, $password);
     return($dbh, %db);
+}
+
+sub getTotals {
+	my ($dbh, %db) = @_;
+	my $sqltot = $db{'sqltot'}
+		or die "'sqltot' property not found\n";
+    my $totsdsc = getValue($dbh, $sqltot);
+    
+	my $sqlmigr = $db{'sqlmgr'}
+		or die "'sqltot' property not found\n";
+    my $totmigr = getValue($dbh, $sqlmigr);
+    return ($totsdsc, $totmigr);
+    
+}
+
+sub getValue {
+	my ($dbh, $sql) = @_;
+
+	# Get list of collections
+	my $stot = $dbh->prepare($sql)
+		or die "prepare statement failed: $dbh->errstr()";
+	$stot->execute() or die "execution failed: $dbh->errstr()";
+	my $ref = $stot->fetchrow_hashref();
+    my $total=$ref->{'total'}
+        or die "'total' not found as result";
+    $stot->finish;
+    return $total;
 }
 
