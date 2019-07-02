@@ -19,6 +19,7 @@ my $sql = $db{'sql'}
 my $sth = $dbh->prepare($sql)
     or die "prepare statement failed: $dbh->errstr()";
 $sth->execute() or die "execution failed: $dbh->errstr()";
+my $sqlcnt = $db{'sqlcnt'};
 
 # create report
 my $title = $db{'title'}
@@ -32,7 +33,15 @@ print "................................................\n\n";
 while (my $ref = $sth->fetchrow_hashref()) {
     my $cid=$ref->{'cid'};
     my $mnemonic = $ref->{'mnemonic'};
-    print "\nCollection: $mnemonic\n";
+    my $missmsg = '';
+    if ($sqlcnt ne '') {
+		my $cnt = testCount($cid, $sqlcnt);
+		if ($cnt == 0) {
+			next;
+		}
+		$missmsg = "- missing objects: $cnt"
+    }
+    print "\nCollection: $mnemonic $missmsg\n";
     getCollection($cid, $mnemonic);
 }
 $sth->finish;
@@ -43,6 +52,20 @@ printf("%-20s %10d\n", "Migrated Objects:",$totmigr);
 printf("%-20s %10d\n", "Total Objects:",$totsdsc);
 print "#####################################################\n";
 exit;
+
+# Get qualified collection information
+sub testCount {
+    my ($cid, $sqlcnt) = @_;
+    #print "cid=$cid - sqlcnt: $sqlcnt\n\n";
+    my $sth = $dbh->prepare($sqlcnt)
+        or die "prepare statement failed: $dbh->errstr()";
+    $sth->execute("$cid","$cid") or die "execution failed: $dbh->errstr()";
+    my $ref = $sth->fetchrow_hashref();
+    my $rowcnt=$ref->{'cnt'};
+    #print "**CID: $cid -- cnt: $rowcnt\n";
+    $sth->finish;
+	return $rowcnt;
+}
 
 # Get qualified collection information
 sub getCollection {
