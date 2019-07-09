@@ -20,6 +20,7 @@ my $sth = $dbh->prepare($sql)
     or die "prepare statement failed: $dbh->errstr()";
 $sth->execute() or die "execution failed: $dbh->errstr()";
 my $sqlcnt = $db{'sqlcnt'};
+my $sqlinc =  $db{'sqlinc'};
 
 # create report
 my $title = $db{'title'}
@@ -39,7 +40,11 @@ while (my $ref = $sth->fetchrow_hashref()) {
 		if ($cnt == 0) {
 			next;
 		}
-		$missmsg = "- missing objects: $cnt"
+		$missmsg = "- missing objects: $cnt";
+		if ($sqlinc ne '') {
+			$incomplete = getValueCollection($cid, $sqlinc);
+			$missmsg = $missmsg . " - incomplete: $incomplete";
+		}
     }
     print "\nCollection: $mnemonic $missmsg\n";
     getCollection($cid, $mnemonic);
@@ -148,9 +153,23 @@ sub getValue {
 		or die "prepare statement failed: $dbh->errstr()";
 	$stot->execute() or die "execution failed: $dbh->errstr()";
 	my $ref = $stot->fetchrow_hashref();
-    my $total=$ref->{'total'}
-        or die "'total' not found as result";
+#	my %h = %$ref;
+#   while (my ($k,$v)=each %h){print "$k $v\n"}
+    my $total=$ref->{'total'};
     $stot->finish;
     return $total;
 }
 
+
+sub getValueCollection {
+	my ($cid, $sql) = @_;
+
+	# Get list of collections
+	my $stot = $dbh->prepare($sql)
+		or die "prepare statement failed: $dbh->errstr()";
+	$stot->execute($cid) or die "execution failed: $dbh->errstr()";
+	my $ref = $stot->fetchrow_hashref();
+    my $total=$ref->{'total'};
+    $stot->finish;
+    return $total;
+}
