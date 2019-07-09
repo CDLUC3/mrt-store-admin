@@ -45,9 +45,15 @@ my ($indir, $outdir,$logdir) = setBase(%db);
 my $logfile = setLog(%db);
 
 # Get mnemonic for new collection to migrate
-print "Enter add reset collection mnemonic: ";
-my $collectName = <STDIN>;
-chomp $collectName;
+my $collectName;
+if (@ARGV == 2) {
+	$collectName =  $ARGV[1];
+	print "Propert mnemonic supplied:$collectName\n";
+} else {
+	print "Enter add reset collection mnemonic: ";
+	my $collectName = <STDIN>;
+	chomp $collectName;
+}
 if (length($collectName) == 0) {
 	logerr("FAIL: no collection mnemonic supplied\n");
 }
