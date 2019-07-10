@@ -20,6 +20,7 @@ my $addBaseSQL = 'from inv_nodes_inv_objects as NO,  '
             . 'and cn.inv_collection_id = co.inv_collection_id ' 
             . 'and no.inv_object_id=o.id ' 
             . "AND NO.role='primary' "
+            . 'and not no.replicated is null '
             . 'and no.inv_object_id not IN ( ' 
             . 'select o.id ' 
             . 'from inv_objects as o, ' 
