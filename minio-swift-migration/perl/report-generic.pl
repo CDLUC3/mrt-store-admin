@@ -50,12 +50,7 @@ while (my $ref = $sth->fetchrow_hashref()) {
     getCollection($cid, $mnemonic);
 }
 $sth->finish;
-
-my ($totsdsc, $totmigr) = getTotals($dbh, %db);
-print "\n#####################################################\n";
-printf("%-20s %10d\n", "Migrated Objects:",$totmigr);
-printf("%-20s %10d\n", "Total Objects:",$totsdsc);
-print "#####################################################\n";
+printTotalReport($dbh, %db);
 exit;
 
 # Get qualified collection information
@@ -132,19 +127,6 @@ sub getDB {
     return($dbh, %db);
 }
 
-sub getTotals {
-	my ($dbh, %db) = @_;
-	my $sqltot = $db{'sqltot'}
-		or die "'sqltot' property not found\n";
-    my $totsdsc = getValue($dbh, $sqltot);
-    
-	my $sqlmigr = $db{'sqlmgr'}
-		or die "'sqltot' property not found\n";
-    my $totmigr = getValue($dbh, $sqlmigr);
-    return ($totsdsc, $totmigr);
-    
-}
-
 sub getValue {
 	my ($dbh, $sql) = @_;
 
@@ -172,4 +154,49 @@ sub getValueCollection {
     my $total=$ref->{'total'};
     $stot->finish;
     return $total;
+}
+
+sub getTotals {
+	my ($dbh, %db) = @_;
+	my $sqlobjall = $db{'sqlobjall'}
+		or die "'sqlobjall' property not found\n";
+    my $totobjall = getValue($dbh, $sqlobjall);
+ #   print "totobjall=$totobjall\n";
+    
+	my $sqlobjmigr = $db{'sqlobjmigr'}
+		or die "'sqlobjmigr' property not found\n";
+    my $totobjmigr = getValue($dbh, $sqlobjmigr);
+#    print "totobjmigr=$totobjmigr\n";
+    
+	my $sqlbyteall = $db{'sqlbyteall'}
+		or die "'sqlbyteall' property not found\n";
+    my $totbyteall = getValue($dbh, $sqlbyteall);
+#    print "totbyteall=$totbyteall\n";
+    
+	my $sqlbytemigr = $db{'sqlbytemigr'}
+		or die "'sqlbytemigr' property not found\n";
+    my $totbytemigr = getValue($dbh, $sqlbytemigr);
+#    print "totbytemigr=$totbytemigr\n";
+    
+    return ($totobjall, $totobjmigr, $totbyteall, $totbytemigr);
+    
+}
+
+sub printTotalReport {
+	my ($dbh, %db) = @_;
+	my $sqlbyteall = $db{'sqlbyteall'}
+		or return;
+	my ($totobjall, $totobjmigr, $totbyteall, $totbytemigr) = getTotals($dbh, %db);
+
+	print "\n";
+	print "#" x 70 . "\n";
+	print "TOTALS\n\n";
+	my $perobj=($totobjmigr/$totobjall) * 100;
+	my $perbyte=($totbytemigr/$totbyteall) * 100;
+	printf("Objects:  Migrated=%d  - Total=%d - %8.4f\%\n",
+			$totobjmigr, $totobjmigr, $perobj);
+	printf("Bytes:    Migrated=%d  - Total=%d - %8.4f\%\n",
+			$totbytemigr, $totbyteall, $perbyte);
+	print "#" x 70 . "\n";
+	return;
 }
