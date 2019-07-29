@@ -97,7 +97,7 @@ sub printTotalReport {
 	my $perobj=($totobjmigr/$totobjall) * 100;
 	my $perbyte=($totbytemigr/$totbyteall) * 100;
 	printf("Objects:  Migrated=%d  - Total=%d - %8.4f\%\n",
-			$totobjmigr, $totobjmigr, $perobj);
+			$totobjmigr, $totobjall, $perobj);
 	printf("Bytes:    Migrated=%d  - Total=%d - %8.4f\%\n",
 			$totbytemigr, $totbyteall, $perbyte);
 	print "#" x 70 . "\n";
